@@ -29,16 +29,23 @@ namespace Brutus
         /// </summary>
         const int ToLength = 4;
 
+        /// <summary>
+        /// The hashed password
+        /// </summary>
+        const string HashedPassword = "FI6HxbrYqNC0JVh9Nb1gEmynHE791JEyXdEILVXsDPrbeotAAh4tFsAuN+mvH3lGYXSGchCIw7fWfFV18CVSdw==";
+
+        /// <summary>
+        /// The salt
+        /// </summary>
+        const string Salt = "xXwi2Gy+eFXBvcqT+H6EotPDFYc4fYDurBRIe6KxaatItHZJaLQn845QXrDeaIY/zgxw2lkD30j8NCtXdf2zD1QeS0MHOjofmyL55x/PD0SNCayVQY5SRNQuTTOJz32RnU5cvx1DN5TSUD42CvgoLCTnymxQHc3FzAZu2e0GlculaErQck8mStEYw/BQGzrcBSAPogURQH+Bl/MW1F6my7tzkaGtWLnVwICaOFrddbDMkdPM9/LGkyfKT9tcD3Vzcfc13IqYLq1nOeKFdwgloyJCSkKL2tTIrP164wndeLAKJsZiqJgmNGImZL0QQBwfpau5GcUy6JYibDCMHkukiQ==";
+
         static readonly Encoding TextEncoding = Encoding.UTF8;
 
         static void Main()
         {
-            const string hashedPassword = "FI6HxbrYqNC0JVh9Nb1gEmynHE791JEyXdEILVXsDPrbeotAAh4tFsAuN+mvH3lGYXSGchCIw7fWfFV18CVSdw==";
-            const string salt = "xXwi2Gy+eFXBvcqT+H6EotPDFYc4fYDurBRIe6KxaatItHZJaLQn845QXrDeaIY/zgxw2lkD30j8NCtXdf2zD1QeS0MHOjofmyL55x/PD0SNCayVQY5SRNQuTTOJz32RnU5cvx1DN5TSUD42CvgoLCTnymxQHc3FzAZu2e0GlculaErQck8mStEYw/BQGzrcBSAPogURQH+Bl/MW1F6my7tzkaGtWLnVwICaOFrddbDMkdPM9/LGkyfKT9tcD3Vzcfc13IqYLq1nOeKFdwgloyJCSkKL2tTIrP164wndeLAKJsZiqJgmNGImZL0QQBwfpau5GcUy6JYibDCMHkukiQ==";
-
             var cancellationTokenSource = new CancellationTokenSource();
 
-            Task.Run(() => GuesPassword(cancellationTokenSource.Token, hashedPassword, salt));
+            Task.Run(() => GuesPassword(cancellationTokenSource.Token, HashedPassword, Salt));
 
             Console.WriteLine("Press ENTER to quit");
             Console.ReadLine();
