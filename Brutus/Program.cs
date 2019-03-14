@@ -12,8 +12,6 @@ namespace Brutus
 {
     class Program
     {
-        // *********** TWEAKABLE PARAMETERS *************
-
         /// <summary>
         /// Defines the alphabet to check (i.e. possible characters)
         /// </summary>
@@ -45,7 +43,18 @@ namespace Brutus
         {
             var cancellationTokenSource = new CancellationTokenSource();
 
-            Task.Run(() => GuesPassword(cancellationTokenSource.Token, HashedPassword, Salt));
+            var totalNumberOfCandidates = GetLengths()
+                .Sum(length => (long)Math.Pow(Alphabet.Length, length));
+
+            Console.WriteLine($@"Running tests with alphabet
+
+    {Alphabet}
+
+with password lengths from {FromLength} to {ToLength}.
+
+Total number of candidates: {totalNumberOfCandidates}");
+
+            Task.Run(() => GuessPassword(cancellationTokenSource.Token, HashedPassword, Salt, totalNumberOfCandidates));
 
             Console.WriteLine("Press ENTER to quit");
             Console.ReadLine();
@@ -53,7 +62,7 @@ namespace Brutus
             cancellationTokenSource.Cancel();
         }
 
-        static void GuesPassword(CancellationToken token, string hashedPassword, string salt)
+        static void GuessPassword(CancellationToken token, string hashedPassword, string salt, long totalNumberOfCandidates)
         {
             var stopwatch = Stopwatch.StartNew();
             var count = 0;
@@ -73,7 +82,8 @@ namespace Brutus
 
                     if (newValue % 1000000 == 0)
                     {
-                        Console.WriteLine($"{newValue} candidates processed");
+                        var percentage = 100 * newValue / (double)totalNumberOfCandidates;
+                        Console.WriteLine($"{newValue} candidates processed ({percentage:0.00} %)");
                     }
                 });
 
@@ -92,7 +102,9 @@ namespace Brutus
             }
         }
 
-        static IEnumerable<string> GetCandidates(CancellationToken token)
+        static IEnumerable<string> GetCandidates(CancellationToken token) => GetLengths().SelectMany(length => GetCandidates(length, token));
+
+        static IEnumerable<int> GetLengths()
         {
             var count = ToLength - FromLength + 1;
 
@@ -101,7 +113,7 @@ namespace Brutus
                 throw new ArgumentException("Please set FromLength and ToLength so that FromLength <= ToLength");
             }
 
-            return Enumerable.Range(FromLength, count).SelectMany(length => GetCandidates(length, token));
+            return Enumerable.Range(FromLength, count);
         }
 
         static IEnumerable<string> GetCandidates(int length, CancellationToken token)
