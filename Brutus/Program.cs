@@ -6,6 +6,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Brutus.Extensions;
+
 // ReSharper disable MethodSupportsCancellation
 
 namespace Brutus
@@ -83,7 +85,10 @@ Total number of candidates: {totalNumberOfCandidates}");
                     if (newValue % 1000000 == 0)
                     {
                         var percentage = 100 * newValue / (double)totalNumberOfCandidates;
-                        Console.WriteLine($"{newValue} candidates processed ({percentage:0.00} %)");
+                        var elapsedUntilNow = stopwatch.Elapsed;
+                        var estimatedEndTime = GetEstimatedTimeLeft(totalNumberOfCandidates, newValue, elapsedUntilNow);
+
+                        Console.WriteLine($"{percentage:0.00} % - {newValue} candidates processed, est. finish: {estimatedEndTime}");
                     }
                 });
 
@@ -100,6 +105,18 @@ Total number of candidates: {totalNumberOfCandidates}");
             {
                 Console.WriteLine($"Error in guessing function: {exception}");
             }
+        }
+
+        static string GetEstimatedTimeLeft(long totalNumberOfCandidates, int newValue, TimeSpan elapsedUntilNow)
+        {
+            if (newValue <= 0) return "???";
+
+            var finishRatio = newValue / (double)totalNumberOfCandidates;
+            var secondsLeft = elapsedUntilNow.TotalSeconds / finishRatio;
+            var estimatedTotalTime = TimeSpan.FromSeconds(secondsLeft);
+            var estimatedTimeLeft = estimatedTotalTime-elapsedUntilNow;
+
+            return estimatedTimeLeft.ToHumanReadableTimeSpan();
         }
 
         static IEnumerable<string> GetCandidates(CancellationToken token) => GetLengths().SelectMany(length => GetCandidates(length, token));
